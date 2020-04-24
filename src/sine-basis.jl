@@ -25,7 +25,7 @@ end
 Partial derivative in x-direction of above function.
 """
 function ∂x_sin_k_x(k::Int)::Function
-    return (x::Number, y::Number) -> √2π*k * cos(π*k*x)
+    return (x::Number, y::Number) -> √2 * π*k * cos(π*k*x)
 end
 
 
@@ -73,7 +73,7 @@ end
 Partial derivative in y-direction of above function.
 """
 function ∂y_sin_k_y(k::Int)::Function
-    return (x::Number, y::Number) -> √2π*k * cos(π*k*y)
+    return (x::Number, y::Number) -> √2*π*k * cos(π*k*y)
 end
 
 """
@@ -99,7 +99,7 @@ Returns:
     Function
 """
 function sin_k_sin_l_x(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> [2 * sin(π*k*x) * sin(π*l*y), 0.]
+    return (x::Number, y::Number) -> [2 * sin(π*k*x) * sin(2π*l*y), 0.]
 end
 
 
@@ -107,7 +107,7 @@ end
 Partial derivative in x-direction of above function.
 """
 function ∂x_sin_k_sin_l_x(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> 2π*k * cos(π*k*x) * sin(π*l*y)
+    return (x::Number, y::Number) -> 2π*k * cos(π*k*x) * sin(2π*l*y)
 end
 
 
@@ -115,12 +115,12 @@ end
 Partial derivative in y-direction of above function.
 """
 function ∂y_sin_k_sin_l_x(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> 2π*l * sin(π*k*x) * cos(π*l*y)
+    return (x::Number, y::Number) -> 4π*l * sin(π*k*x) * cos(2π*l*y)
 end
 
 
 function D_sin_k_sin_l_x(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> [[2π*k*cos(π*k*x)*sin(π*l*y) 2π*l*sin(π*k*x)*cos(π*l*y)]; [0. 0.]] 
+    return (x::Number, y::Number) -> [[2π*k*cos(π*k*x)*sin(2π*l*y) 4π*l*sin(π*k*x)*cos(2π*l*y)]; [0. 0.]] 
 end
 
 # ==== 
@@ -139,7 +139,7 @@ Returns:
     Function
 """
 function sin_k_sin_l_y(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> [0., 2sin(π*k*y) * sin(π*l*x)] # y-direction
+    return (x::Number, y::Number) -> [0., 2sin(π*k*y) * sin(2π*l*x)] # y-direction
 end
 
 
@@ -147,7 +147,7 @@ end
 Partial derivative in x-direction of above function.
 """
 function ∂x_sin_k_sin_l_y(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> 2π*l * sin(π*k*y) * cos(π*l*x)
+    return (x::Number, y::Number) -> 4π*l * sin(π*k*y) * cos(2π*l*x)
 end
 
 
@@ -155,14 +155,14 @@ end
 Partial derivative in y-direction of above function.
 """
 function ∂y_sin_k_sin_l_y(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> 2π*k * cos(π*k*y) * sin(π*l*x)
+    return (x::Number, y::Number) -> 2π*k * cos(π*k*y) * sin(2π*l*x)
 end
 
 """
 Derivative/Jacobian of type 2 functions in y-direction
 """
 function D_sin_k_sin_l_y(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> [[0. 0.]; [2π*l*sin(π*k*y)*cos(π*l*x) 2π*k*cos(π*k*y)*sin(π*l*x)]]
+    return (x::Number, y::Number) -> [[0. 0.]; [4π*l*sin(π*k*y)*cos(2π*l*x) 2π*k*cos(π*k*y)*sin(π*l*x)]]
 end
 
 # ==== 
@@ -180,7 +180,7 @@ Returns:
     Function
 """
 function sin_k_cos_l_x(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> [2 * sin(π*k*x) * cos(π*l*y), 0.]
+    return (x::Number, y::Number) -> [2 * sin(π*k*x) * cos(2π*l*y), 0.]
 end
 
 
@@ -188,7 +188,7 @@ end
 Partial derivative in x-direction of above function.
 """
 function ∂x_sin_k_cos_l_x(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> 2π*k * cos(π*k*x) * cos(π*l*y)
+    return (x::Number, y::Number) -> 2π*k * cos(π*k*x) * cos(2π*l*y)
 end
 
 
@@ -196,7 +196,7 @@ end
 Partial derivative in y-direction of above function.
 """
 function ∂y_sin_k_cos_l_x(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> -2π*l * sin(π*k*x) * sin(π*l*y)
+    return (x::Number, y::Number) -> -4π*l * sin(π*k*x) * sin(2π*l*y)
 end
 
 
@@ -204,7 +204,7 @@ end
 Derivative of Type 3 functions in x-direction
 """
 function D_sin_k_cos_l_x(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> [[2π*k*cos(π*k*x)*cos(π*l*y) -2π*l*sin(π*k*x)*sin(π*l*y)]; [0. 0.]]
+    return (x::Number, y::Number) -> [[2π*k*cos(π*k*x)*cos(2π*l*y) -4π*l*sin(π*k*x)*sin(2π*l*y)]; [0. 0.]]
 end
 
 # ==== 
@@ -222,7 +222,7 @@ Returns:
     Function
 """
 function sin_k_cos_l_y(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> [0., 2 * sin(π*k*y) * cos(π*l*x)]
+    return (x::Number, y::Number) -> [0., 2 * sin(π*k*y) * cos(2π*l*x)]
 end
 
 
@@ -230,7 +230,7 @@ end
 Partial derivative in x-direction of above function.
 """
 function ∂x_sin_k_cos_l_y(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> [-2π*l* sin(π*k*y) * sin(π*l*x), 0.]
+    return (x::Number, y::Number) -> -4π*l* sin(π*k*y) * sin(2π*l*x)
 end
 
 
@@ -238,7 +238,7 @@ end
 Partial derivative in y-direction of above function.
 """
 function ∂y_sin_k_cos_l_y(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> 2π*k * cos(π*k*y) * cos(π*l*x)
+    return (x::Number, y::Number) -> 2π*k * cos(π*k*y) * cos(2π*l*x)
 end
 
 
@@ -246,7 +246,7 @@ end
 Derivative/Jacobian of type 3 functions in y-direction.
 """
 function D_sin_k_cos_l_y(k::Int, l::Int)::Function
-    return (x::Number, y::Number) -> [[0. 0.]; [-2π*l*sin(π*k*y)*sin(π*l*x) 2π*k*cos(π*k*y)*cos(π*l*y)]]
+    return (x::Number, y::Number) -> [[0. 0.]; [-4π*l*sin(π*k*y)*sin(2π*l*x) 2π*k*cos(π*k*y)*cos(2π*l*y)]]
 end
 
 function build_basis(K::Int)
