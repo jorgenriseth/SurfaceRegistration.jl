@@ -3,6 +3,13 @@ uuid = "6bd7b077-53e3-4ae0-9620-25197cb37145"
 authors = ["Jørgen Riseth <jnriseth@gmail.com>"]
 version = "0.1.0"
 
+[deps]
+Cubature = "667455a9-e2ce-5579-9412-b964f529a492"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+HCubature = "19dc6840-f33b-545b-b366-655c7e3ffd49"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+
 [compat]
 julia = "1"
 
