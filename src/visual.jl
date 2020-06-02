@@ -1,5 +1,3 @@
-using PyPlot
-
 function plot_parametric_surface(func; n_points=41, axis_title="", axis=nothing, camera=(15, 45))
     # Plot Data
     xs = ys = range(0, 1, length=n_points)

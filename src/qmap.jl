@@ -1,7 +1,3 @@
-using HCubature: hcubature
-using LinearAlgebra: ⋅, ×, norm
-using ForwardDiff: gradient, jacobian, derivative
-
 """
 Area scaling factor for a function f with partial derivatives fx, fy
     * fx::Function

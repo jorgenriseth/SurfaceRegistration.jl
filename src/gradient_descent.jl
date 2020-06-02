@@ -1,8 +1,3 @@
-using LinearAlgebra
-
-include("operators.jl")
-include("vectorfields.jl")
-
 function find_point_max_ε(x, M)
     a = det(M(x))
     

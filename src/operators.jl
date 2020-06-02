@@ -1,6 +1,3 @@
-using Cubature
-using LinearAlgebra
-
 function l2_squared_norm(f; tol=1e-12)
     return pcubature(x -> norm(f(x))^2, [0., 0.], [1., 1.], abstol=tol)[1]
 end

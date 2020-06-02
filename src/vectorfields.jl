@@ -2,9 +2,6 @@
 Construct vectorfields and derivatives from bases and coefficients.
 """
 
-using LinearAlgebra
-using ForwardDiff
-
 function construct_vectorfield(coeff, B)
     @assert length(coeff) == length(B)
     a = copy(coeff)
