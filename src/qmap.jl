@@ -11,6 +11,15 @@ function af(fx, fy)
 end
 
 
+function af(f)
+    # Find partial derivatives
+    fx(x) = ForwardDiff.derivative(z -> f([z, x[2]]), x[1])
+    fy(x) = ForwardDiff.derivative(z -> f([x[1], z]), x[2])
+    
+    # Compute area scaling factor
+    return x -> norm(fx(x)×fy(x))
+end
+
 """
 Derivative of area scaling factor for a function f with derivatives 
     * fx::Function
@@ -39,15 +48,15 @@ Returns:
 """
 function Qmap(f)
     # Find partial derivatives
-    fx(x) = derivative(z -> f([z, x[2]]), x[1])
-    fy(x) = derivative(z -> f([x[1], z]), x[2])
+    fx(x) = ForwardDiff.derivative(z -> f([z, x[2]]), x[1])
+    fy(x) = ForwardDiff.derivative(z -> f([x[1], z]), x[2])
     
     # Compute area scaling factor
     a = af(fx, fy)
     
     # Return q-map and derivative 
     q(x) = √a(x) * f(x)
-    Dq(x) = jacobian(q, x)
+    Dq(x) = ForwardDiff.jacobian(q, x)
     return q, Dq
 end
 
@@ -65,7 +74,7 @@ function Qmap(f, fx, fy)
     a = af(fx, fy)
     
     q(x) = √a(x) * f(x)
-    Dq(x) = jacobian(q, x)
+    Dq(x) = ForwardDiff.jacobian(q, x)
     return q, Dq
 end
 
@@ -155,8 +164,8 @@ Returns:
 """
 function normalize_surface(f)
     # Find partial derivatives
-    fx(x) = derivative(z -> f([z, x[2]]), x[1])
-    fy(x) = derivative(z -> f([x[1], z]), x[2])
+    fx(x) = ForwardDiff.derivative(z -> f([z, x[2]]), x[1])
+    fy(x) = ForwardDiff.derivative(z -> f([x[1], z]), x[2])
     
     # Compute area scaling factor
     a = af(fx, fy)

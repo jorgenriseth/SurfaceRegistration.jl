@@ -1,4 +1,2 @@
 # SurfaceRegistration
-
-[![Build Status](https://travis-ci.com/jorgenriseth/SurfaceRegistration.jl.svg?branch=master)](https://travis-ci.com/jorgenriseth/SurfaceRegistration.jl)
-[![Codecov](https://codecov.io/gh/jorgenriseth/SurfaceRegistration.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/jorgenriseth/SurfaceRegistration.jl)
+This repo contains the code used for my Industrial Mathematics Specialization Project at the Norwegian University of Science and Technology. Most functions are provided in the src-folder, while the notebook folder give examples for usage, and display some results.

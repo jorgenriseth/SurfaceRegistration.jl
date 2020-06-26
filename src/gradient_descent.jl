@@ -32,7 +32,7 @@ function find_max_ε(M)
 end
 
 
-function armijo(q, r, v, Dv; c1=0.2, ρ=0.5, max_iter=50, verbose=false)
+function armijo(q, r, v, Dv; c1=0.2, ρ=0.5, max_iter=50, norm_tol=1e-12, verbose=false)
     # Set starting value for varepsilon
     ε = find_max_ε(Dv)
     
@@ -43,14 +43,14 @@ function armijo(q, r, v, Dv; c1=0.2, ρ=0.5, max_iter=50, verbose=false)
     ϕr(x) = √Jγ(x) * r(γ(x))
     
     # Initial Values
-    Eγ0 = l2_squared_distance(q, r)
-    dEγ0 = l2_squared_norm(v)
+    Eγ0 = √l2_squared_distance(q, r, tol=norm_tol)
+    dEγ0 = l2_squared_norm(v, tol=norm_tol)
     
     # Ensure max step size allowed
     run = true
     while run
         try 
-            l2_squared_distance(q, ϕr)
+            √l2_squared_distance(q, ϕr, tol=norm_tol)
             run = false
         catch
             ε *= 0.9
@@ -58,7 +58,7 @@ function armijo(q, r, v, Dv; c1=0.2, ρ=0.5, max_iter=50, verbose=false)
     end
     
     #Set initial values for linesearch
-    lhs0 = l2_squared_distance(q, ϕr)
+    lhs0 = √l2_squared_distance(q, ϕr, tol=norm_tol)
     rhs = Eγ0 - ε * c1 *dEγ0
                 
     
@@ -77,7 +77,7 @@ function armijo(q, r, v, Dv; c1=0.2, ρ=0.5, max_iter=50, verbose=false)
         ε *= ρ
         
         # Update Search values
-        lhs1 = l2_squared_distance(q, ϕr)
+        lhs1 = √l2_squared_distance(q, ϕr, tol=norm_tol)
         rhs = Eγ0 - ε * c1 *dEγ0
         
         # Increment and print results
@@ -108,9 +108,9 @@ function update_D_q_map(J::Function, ∇J::Function, γ::Function, Dγ::Function
 end
 
 
-
 function SurfaceRegistrationAlgorithm(
-    q1, q2, Dq2, B, DB, divB; max_iter=10, error_change_tol=1e-2,
+    q1, q2, Dq2, B, DB, divB; max_iter=10, error_change_tol=1e-4,
+    grad_norm_tol=1e-4,
     inner_product_tol=1e-12, norm_tol=1e-12, armijo_constant=0.2,
     armijo_scaling=0.5, armijo_max_iter=50, verbose=false
 )
@@ -127,7 +127,7 @@ Dr[1] = Dq2
 
 # Array to hold 
 errors = zeros(max_iter+1)
-errors[1] = l2_squared_distance(q1, r[1], tol=norm_tol)
+errors[1] = √l2_squared_distance(q1, r[1], tol=norm_tol)
 
 N = length(B)
 dϕ = Array{Function}(undef, N)
@@ -144,45 +144,54 @@ while n < max_iter + 1
     
     # Tangent Vector
     v = tangent_vector(q1, r[n])
-#         v = x -> q1(x) - r[n](x)
+    #v = x -> q1(x) - r[n](x)
     
     # Get Vector field coefficients
     for i in 1:N
         dϕ[i] = x -> 0.5 * divB[i](x) * r[n](x) + Dr[n](x) * B[i](x)
-        coeff[i] = l2_inner_product(v, dϕ[i])
+        coeff[i] = l2_inner_product(v, dϕ[i], tol=inner_product_tol)
     end
     
     # Construct tangent space vector fields
     dγ = construct_vectorfield(coeff, B)
     Ddγ = construct_jacobian_matrix(coeff, DB)
-    
+    gradNorm = l2_squared_norm(dγ, tol=norm_tol)
+    println("[SurfaceRegristration] Gradient Norm:", gradNorm)
+    if gradNorm < grad_norm_tol
+        print("[SurfaceRegistration] Termination: Gradient Norm. \tError=")
+        println(errors[n])
+        return r[1:n], Dr[1:n], γ[1:n-1], errors[1:n]
+    end
+
+
     # Armijo search to find new parameters
-    ε, γ[n], Dγ[n], J[n], r[n+1] = armijo(q1, r[n], dγ, Ddγ; c1=armijo_constant, ρ=armijo_scaling, max_iter=armijo_max_iter, verbose=verbose)
+    ε, γ[n], Dγ[n], J[n], r[n+1] = armijo(q1, r[n], dγ, Ddγ; c1=armijo_constant, ρ=armijo_scaling, max_iter=armijo_max_iter, norm_tol=norm_tol, verbose=verbose)
     
     ∇J[n] = gradient_jacobian_determinant(Dγ[n])
     Dr[n+1] = update_D_q_map(J[n], ∇J[n], γ[n], Dγ[n], r[n], Dr[n])
     
     # Compute new error, and check if change is surrficiently small.
-    errors[n + 1] = l2_squared_distance(q1, r[n+1], tol=norm_tol)
+    errors[n + 1] = √l2_squared_distance(q1, r[n+1], tol=norm_tol)
     
     # Terminate if error change is sufficiently small
-    if (errors[n] - errors[n+1])/errors[n] < error_change_tol
-        println("[DEBUG]", (errors[n] - errors[n+1])/errors[n])
+    if 1 - errors[n+1] / errors[n] < error_change_tol
+        println("[DEBUG]", 1 - errors[n+1] / errors[n])
         println("="^60)
         print("[SurfaceRegistration] Termination: Error Change. \tError=")
-        println(errors[n])
+        println(errors[n+1])
         println("="^60)
-        return r[1:n+1], γ[1:n], errors[1:n+1]
+        return r[1:n+1], Dr[1:n+1], γ[1:n], errors[1:n+1]
     end
     
     # Terminate if step_size is sufficiently small
-    if ε < 1e-8
-        println("="^60)
-        print("[SurfaceRegistration] Termination: Step Size. \tError=")
-        println(errors[n])
-        println("="^60)
-        return r[1:n+1], γ[1:n], errors[1:n+1]
-    end        
+    # if ε < 1e-15
+    #     println(ε)
+    #     println("="^60)
+    #     print("[SurfaceRegistration] Termination: Step Size. \tError=")
+    #     println(errors[n+1])
+    #     println("="^60)
+    #     return r[1:n+1], Dr[1:n+1], γ[1:n], errors[1:n+1]    
+    # end        
     
     # Update Iteration
     n += 1
@@ -192,5 +201,5 @@ println("="^60)
 println("[SurfaceRegistration] Done. \tError=", errors[n])
 println("="^60)
 
-return r, γ, errors, Dr
+return r, Dr, γ, errors
 end
